@@ -1,0 +1,19 @@
+model Site {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  banners   Banner[] // サイトに紐づくバナー
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Banner {
+  id        String   @id @default(uuid())
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade) // サイトに紐づく
+  imageUrl  String
+  linkUrl   String
+  displayRules String // 表示条件（例: ユーザー離脱時など）
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
