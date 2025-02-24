@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const sites = await prisma.site.findMany();
     return NextResponse.json(sites, { status: 200 });

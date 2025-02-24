@@ -1,47 +1,69 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import type { RouteContext } from "@/types/routeContext";
 
-// バナーを更新
-export async function PUT(req: NextRequest, context: RouteContext) {
-  const { id } = context.params;
-  const bannerId = Number(id);
+// ✅ Next.js の動的ルート最適化を防ぐ
+export const dynamic = "force-dynamic";
+
+// PUT: サイト情報を更新
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  console.log("context:", params); // ✅ デバッグ用
+
+  const { id } = params;
+
+  if (!id) {
+    return NextResponse.json({ error: "Invalid site ID" }, { status: 400 });
+  }
+
+  const siteId = Number(id);
   const data = await req.json();
 
-  if (isNaN(bannerId) || !data.title) {
+  if (isNaN(siteId) || !data.name) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
   try {
-    const updatedBanner = await prisma.banner.update({
-      where: { id: bannerId },
-      data: { name: data.title },
+    const updatedSite = await prisma.site.update({
+      where: { id: siteId },
+      data,
     });
 
-    return NextResponse.json(updatedBanner, { status: 200 });
+    return NextResponse.json(updatedSite, { status: 200 });
   } catch (error) {
     console.error("PUT Error:", error);
-    return NextResponse.json({ error: "バナーが見つかりません" }, { status: 404 });
+    return NextResponse.json({ error: "サイトが見つかりません" }, { status: 404 });
   }
 }
 
-// バナーを削除
-export async function DELETE(req: NextRequest, context: RouteContext) {
-  const { id } = context.params;
-  const bannerId = Number(id);
+// DELETE: サイトを削除
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  console.log("context:", params); // ✅ デバッグ用
 
-  if (isNaN(bannerId)) {
-    return NextResponse.json({ error: "Invalid banner ID" }, { status: 400 });
+  const { id } = params;
+
+  if (!id) {
+    return NextResponse.json({ error: "Invalid site ID" }, { status: 400 });
+  }
+
+  const siteId = Number(id);
+
+  if (isNaN(siteId)) {
+    return NextResponse.json({ error: "Invalid site ID" }, { status: 400 });
   }
 
   try {
-    await prisma.banner.delete({
-      where: { id: bannerId },
+    await prisma.site.delete({
+      where: { id: siteId },
     });
 
-    return NextResponse.json({ message: "バナーを削除しました" }, { status: 200 });
+    return NextResponse.json({ message: "サイトを削除しました" }, { status: 200 });
   } catch (error) {
     console.error("DELETE Error:", error);
-    return NextResponse.json({ error: "バナーが見つかりません" }, { status: 404 });
+    return NextResponse.json({ error: "サイトが見つかりません" }, { status: 404 });
   }
 }

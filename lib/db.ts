@@ -1,20 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 
-declare global {
-  // `globalThis` に `prisma` を追加する
-  namespace globalThis {
-    var prisma: PrismaClient | undefined;
-  }
-}
-
-// `globalThis.prisma` を使って Prisma Client のインスタンスを保持
-export const prisma =
-  globalThis.prisma ??
-  new PrismaClient({
+// `globalThis.prisma` を使って Prisma Client のインスタンスを管理
+const prismaClientSingleton = () => {
+  return new PrismaClient({
     log: ['query', 'info', 'warn', 'error'],
   });
+};
 
-// `production` 環境ではインスタンスをキャッシュしない
+// `production` 環境ではキャッシュしない
+export const prisma =
+  (globalThis as unknown as { prisma: PrismaClient }).prisma ?? prismaClientSingleton();
+
 if (process.env.NODE_ENV !== 'production') {
-  globalThis.prisma = prisma;
+  (globalThis as unknown as { prisma: PrismaClient }).prisma = prisma;
 }
