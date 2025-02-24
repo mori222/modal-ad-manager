@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     // 成功時にはオブジェクトを返す
     return NextResponse.json(newSite, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("POST Error:", error);
 
     // エラーハンドリング時にもオブジェクトを返す
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
   try {
     const sites = await prisma.site.findMany();
     return NextResponse.json(sites, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("GET Error:", error);
     return NextResponse.json(
       { error: "サイトの取得に失敗しました。" },

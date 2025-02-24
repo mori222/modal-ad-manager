@@ -13,8 +13,18 @@ export const config = {
   },
 };
 
-// デバッグ用のログ関数
-function log(message: string, data?: any) {
+type LogData = {
+  fields?: formidable.Fields;
+  files?: formidable.Files;
+  error?: Error;
+  headers?: HeadersInit;
+  name?: string;
+  displayTiming?: string;
+  url?: string;
+  file?: formidable.File;
+} | Record<string, unknown> | string;  // 文字列も許可
+
+function log(message: string, data?: LogData) {
   console.log(message);
   if (data) console.log(data);
 }
