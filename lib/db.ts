@@ -1,7 +1,14 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
-const globalForPrisma = global as unknown as { prisma?: PrismaClient };
+declare global {
+  // 型の拡張を行い、グローバル変数を宣言
+  var prisma: PrismaClient | undefined;
+}
 
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+export const prisma =
+  global.prisma ||
+  new PrismaClient({
+    log: ['query', 'info', 'warn', 'error'], // デバッグ用ログ
+  });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma;

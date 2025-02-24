@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 interface DropdownProps {
   options: { value: string; label: string }[];
   value: string;

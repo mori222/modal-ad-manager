@@ -31,8 +31,7 @@ export default function SiteListPage() {
         if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
         const data = await res.json();
         setSites(data);
-      } catch (err) {
-        console.error("サイト一覧の取得に失敗:", err);
+      } catch {
         setError("サイト一覧の取得に失敗しました");
       }
     }
@@ -62,7 +61,7 @@ export default function SiteListPage() {
       setSites((prev) => [...prev, createdSite]);
       setNewSite({ name: "", url: "" });
       setIsModalOpen(false);
-    } catch (err) {
+    } catch {
       setError("サイトの登録に失敗しました");
     }
   };
@@ -85,7 +84,7 @@ export default function SiteListPage() {
         prev.map((site) => (site.id === editSite.id ? editSite : site))
       );
       setEditModalOpen(false);
-    } catch (err) {
+    } catch {
       setError("サイトの編集に失敗しました");
     }
   };
@@ -101,7 +100,7 @@ export default function SiteListPage() {
 
       setSites((prev) => prev.filter((site) => site.id !== deleteSiteId));
       setDeleteModalOpen(false);
-    } catch (err) {
+    } catch {
       setError("サイトの削除に失敗しました");
     }
   };

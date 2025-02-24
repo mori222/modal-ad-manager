@@ -13,7 +13,6 @@ const Login = () => {
     e.preventDefault();
     setError("");
     
-    // 仮の認証処理（APIと統合する場合はここを修正）
     if (email === "admin@example.com" && password === "password") {
       router.push("/dashboard");
     } else {

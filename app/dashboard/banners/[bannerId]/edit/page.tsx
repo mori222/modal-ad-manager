@@ -2,23 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { getBannerById, updateBanner, deleteBanner } from "@/lib/banner";
+import { updateBanner, deleteBanner } from "@/lib/banner"; // getBannerById を削除
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
-
-interface Banner {
-  id: number;
-  title: string;
-  imageUrl: string;
-  displayTiming: string;
-  redirectUrl: string;
-}
+import Image from "next/image";
 
 export default function EditBannerPage() {
   const router = useRouter();
   const { bannerId } = useParams();
-  const [banner, setBanner] = useState<Banner | null>(null);
   const [title, setTitle] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [displayTiming, setDisplayTiming] = useState("5");
@@ -28,32 +20,57 @@ export default function EditBannerPage() {
 
   useEffect(() => {
     async function fetchBanner() {
-      if (typeof bannerId !== 'string') return;
-      const data = await getBannerById(bannerId);
-      if (!data) return;
+      if (typeof bannerId !== "string") return;
       
-      setBanner(data);
-      setTitle(data.title);
-      setImageUrl(data.imageUrl);
-      setDisplayTiming(data.displayTiming);
-      setRedirectUrl(data.redirectUrl);
-      setPreview(data.imageUrl);
+      try {
+        const res = await fetch(`/api/banners/${bannerId}`);
+        if (!res.ok) {
+          throw new Error("バナーが見つかりません");
+        }
+        const data = await res.json();
+
+        setTitle(data.name);
+        setImageUrl(data.imageUrl);
+        setDisplayTiming(data.displayTiming);
+        setRedirectUrl(data.url);
+        setPreview(data.imageUrl);
+      } catch (error) {
+        console.error("Error fetching banner:", error);
+      }
     }
+
     if (bannerId) fetchBanner();
   }, [bannerId]);
 
   const handleSave = async () => {
-    if (typeof bannerId !== 'string') return;
-    await updateBanner(bannerId, { title, imageUrl, displayTiming, redirectUrl });
-    router.push("/dashboard/banners");
+    if (typeof bannerId !== "string") return;
+    
+    try {
+      await updateBanner(bannerId, { 
+        name: title, 
+        imageUrl, 
+        displayTiming, 
+        url: redirectUrl 
+      });
+  
+      router.push("/dashboard/banners");
+    } catch (error) {
+      console.error("更新エラー:", error);
+    }
   };
 
   const handleDelete = async () => {
-    if (typeof bannerId !== 'string') return;
+    if (typeof bannerId !== "string") return;
     setIsDeleting(true);
-    await deleteBanner(bannerId);
-    router.push("/dashboard/banners");
+  
+    try {
+      await deleteBanner(bannerId);
+      router.push("/dashboard/banners");
+    } catch (error) {
+      console.error("削除エラー:", error);
+    }
   };
+  
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,7 +93,7 @@ export default function EditBannerPage() {
         <div>
           <label className="block text-sm font-medium mb-2">バナー画像</label>
           <input type="file" accept="image/*" onChange={handleImageChange} />
-          {preview && <img src={preview} alt="バナー画像" className="mt-4 w-full max-h-40 object-cover" />}
+          {preview && <Image src={preview} alt="バナー画像" width={400} height={200} className="mt-4 w-full max-h-40 object-cover" />}
         </div>
         <div className="flex gap-4 mt-4">
           <Button onClick={handleSave} className="bg-blue-500 text-white">保存</Button>

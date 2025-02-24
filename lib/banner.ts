@@ -1,11 +1,14 @@
-import { prisma } from "./db";
+import { prisma } from '@/lib/db';
 
 interface Banner {
   id: number;
-  title: string;
-  imageUrl: string;
+  name: string;
+  url: string;
+  siteId: number;
   displayTiming: string;
-  redirectUrl: string;
+  imageUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export async function getBannerById(id: string): Promise<Banner | null> {
@@ -17,14 +20,27 @@ export async function getBannerById(id: string): Promise<Banner | null> {
 }
 
 export async function updateBanner(id: string, data: Partial<Banner>) {
-  return await prisma.banner.update({
-    where: { id: parseInt(id) },
-    data
+  const res = await fetch(`/api/banners/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
   });
+
+  if (!res.ok) {
+    throw new Error("バナーの更新に失敗しました");
+  }
+
+  return await res.json();
 }
 
 export async function deleteBanner(id: string) {
-  return await prisma.banner.delete({
-    where: { id: parseInt(id) }
+  const res = await fetch(`/api/banners/${id}`, {
+    method: "DELETE",
   });
-} 
+
+  if (!res.ok) {
+    throw new Error("バナーの削除に失敗しました");
+  }
+
+  return await res.json();
+}
