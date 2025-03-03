@@ -3,6 +3,8 @@ import React from "react";
 interface RadioProps {
   value: string;
   label: string;
+  checked?: boolean;
+  onChange?: () => void;
 }
 
 interface RadioGroupProps {
@@ -40,4 +42,4 @@ export function Radio({ value, label, checked, onChange }: RadioProps & { checke
       <span>{label}</span>
     </label>
   );
-} 
+}

@@ -10,6 +10,11 @@ const EmbedCode = () => {
   useEffect(() => {
     if (id) {
       setEmbedCode(`<script src="https://your-service.com/embed.js?siteId=${id}" async></script>`);
+      // バナー表示用のスクリプトを追加
+      const bannerScript = document.createElement("script");
+      bannerScript.src = "https://your-service.com/banner.js"; // バナー用のスクリプトURL
+      bannerScript.async = true;
+      document.body.appendChild(bannerScript);
     }
   }, [id]);
 
