@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db"
-import { Prisma } from "@prisma/client"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
 export const dynamic = "force-dynamic"
 
@@ -68,7 +68,7 @@ export async function DELETE(req: Request) {
     console.error("DELETE Error:", error);
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof PrismaClientKnownRequestError &&
       error.code === "P2025"
     ) {
       return new Response(JSON.stringify({ error: "バナーが見つかりません。" }), {
